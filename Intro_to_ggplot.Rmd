@@ -1,7 +1,7 @@
 ---
-title: "ggplot_intro"
+title: "Introduction to ggplot2"
 author: "Gregor Mathes"
-date: "10 4 2020"
+date: "2020-10-04"
 output: html_document
 ---
 
@@ -9,18 +9,47 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown two
+# Overview
 
-# R Markdown one
+This document will give you a short introduction to the wonderful world of ggplot. Before you fight your way through this document, take a look at some of the [best visualisations](https://cedricscherer.netlify.com/2019/12/30/best-tidytuesday-2019/) from 2019 produced with ggplot. Just think of the struggle to produce those in base R.  
+Here, we will deal with the basics and the most important aspects of the package. Each constituent of a graphic is explained shortly and a few examples will hopefully demonstrate how to use the learned input.  I will send around another file with extra exercises for you after the zoom meeting.  
+Please note that ggplot might be a gateway drug to the tidyverse. Unfortunately, this is neither an introduction to the tidyverse nor an exhaustive report showing you every detail of ggplots. If needed, I can provide an intro to the tidyverse within the next weeks. Ggplot offers the chance to produce *any* graph you can think of. Use your power wisely.
 
-### R Markdown three
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Further literature  
+  
+While working on a specific plot, it's always a good idea to have the [cheatsheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) for ggplot open.  
+  
+It might be that my intro confused you more than it helped. This is definitely my fault and not due to ggplot beeing confusing. Don't let my bad presentation skills stop you from producing awesome graphs and do your own research instead.  
+There are a number of free (and great!) books online covering ggplot and data visualisation in detail. [R for Data Science](https://r4ds.had.co.nz/) teaches you how to get your data into R, get it into the most useful structure, transform it, visualise it and model it. Read the chapters *Data Visualisation* and *Graphics for communication* for ggplot info. If you’ve mastered the basics of ggplot and want to learn more, read [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/index.html). It describes the theoretical underpinnings of ggplot2 and shows you how all the pieces fit together. This book helps you understand the theory that underpins ggplot2, and will help you create new types of graphics specifically tailored to your needs. If you still want more, read [Data Visualization: A practical introduction](http://socviz.co/). It introduces you to both the ideas and the methods of data visualization in a sensible, comprehensible, reproducible way using ggplot (with code). And last but not least, if you’d like to learn more about the theoretical underpinnings of ggplot2 before you start, you can always refer to [The Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf).  
+  
+Ggplot has a number of [extentions](http://exts.ggplot2.tidyverse.org/gallery/) (other packages), which we will ignore for now. Especially *ggrepel*, *ggforce* and *patchwork* might be very useful for you later on.  
+  
+The best thing about R compared to other programming languages is the community and the help you can find online by simply googling stuff. Ggplot is no exception from this. You will find a lot of input online. 
+  
+  
+## Get started
+  
+As ggplot2 is not part of base R, we need to download it first.
+```{r installation ggplot, eval = FALSE}
+install.packages("ggplot2")
+library(ggplot2)
+```
+However, we will use data sets from the tidyverse. Ggplot is a part of the tidyverse and will automatically get called along with other package when you load the tidyverse. 
+```{r load tidyverse, warning = FALSE}
+library(tidyverse)
+```
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+## Data  
+  
+We will use three data sets that either come with base R or the tidyverse.  
+The *mtcars* data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).  
+```{r mtcars, echo = FALSE}
+knitr::kable(
+  mtcars[1:3, ], 
+  caption = "The mtcars data set"
+)
 ```
 
 ## Including Plots
