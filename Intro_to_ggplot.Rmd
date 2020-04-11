@@ -1,7 +1,7 @@
 ---
 title: "Introduction to ggplot2"
 author: "Gregor Mathes"
-date: "2020-10-04"
+date: "2020-15-04"
 output:
   html_document: default
   github_document: default
@@ -23,7 +23,7 @@ Please note that ggplot might be a gateway drug to the tidyverse. Unfortunately,
 While working on a specific plot, it's always a good idea to have the [cheatsheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) for ggplot open.  
   
 It might be that my intro confused you more than it helped. This is definitely my fault and not due to ggplot beeing confusing. Don't let my bad presentation skills stop you from producing awesome graphs and do your own research instead.  
-There are a number of free (and great!) books online covering ggplot and data visualisation in detail. [R for Data Science](https://r4ds.had.co.nz/) teaches you how to get your data into R, get it into the most useful structure, transform it, visualise it and model it. Read the chapters *Data Visualisation* and *Graphics for communication* for ggplot info. If you’ve mastered the basics of ggplot and want to learn more, read [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/index.html). It describes the theoretical underpinnings of ggplot2 and shows you how all the pieces fit together. This book helps you understand the theory that underpins ggplot2, and will help you create new types of graphics specifically tailored to your needs. If you still want more, read [Data Visualization: A practical introduction](http://socviz.co/). It introduces you to both the ideas and the methods of data visualization in a sensible, comprehensible, reproducible way using ggplot (with code). And last but not least, if you'd like to learn more about the theoretical underpinnings of ggplot2 before you start, you can always refer to [The Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf).  
+There are a number of free (and great!) books online covering ggplot and data visualisation in detail. [R for Data Science](https://r4ds.had.co.nz/) teaches you how to get your data into R, get it into the most useful structure, transform it, visualise it and model it. Read the chapters *Data Visualisation* and *Graphics for communication* for ggplot info. If you've mastered the basics of ggplot and want to learn more, read [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/index.html). It describes the theoretical underpinnings of ggplot2 and shows you how all the pieces fit together. This book helps you understand the theory that underpins ggplot2, and will help you create new types of graphics specifically tailored to your needs. If you still want more, read [Data Visualization: A practical introduction](http://socviz.co/). It introduces you to both the ideas and the methods of data visualization in a sensible, comprehensible, reproducible way using ggplot (with code). And last but not least, if you'd like to learn more about the theoretical underpinnings of ggplot2 before you start, you can always refer to [The Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf).  
   
 Ggplot has a number of [extentions](http://exts.ggplot2.tidyverse.org/gallery/) (other packages), which we will ignore for now. Especially *ggrepel*, *ggforce* and *patchwork* might be very useful for you later on.  
   
@@ -37,21 +37,80 @@ As ggplot2 is not part of base R, we need to download it first.
 install.packages("ggplot2")
 library(ggplot2)
 ```
-However, we will use data sets from the tidyverse. Ggplot is a part of the tidyverse and will automatically get called along with other package when you load the tidyverse. 
+However, we will use data sets from the tidyverse. Ggplot is a part of the tidyverse and will automatically get called along with other packages when you load the tidyverse. 
 ```{r load tidyverse, warning = FALSE}
 library(tidyverse)
 ```
 
 
-## Data  
+### Data  
   
 We will use three data sets that either come with base R or the tidyverse.  
-The *mtcars* data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles.  
+The *mpg* data contains fuel economy data from 1999 to 2008 for 38 popular models of cars. This dataset is attached to the ggplot2 package  
 ```{r mtcars, echo = FALSE}
 knitr::kable(
-  mtcars[1:3, ], 
-  caption = "The mtcars data set"
+  mpg[1:3, ], 
+  caption = "The mpg data set"
 )
 ```
+  
+Another popular dataset is the *flights* data from the *nycflights13* package. It contains on-time data for all flights that departed NYC (i.e. JFK, LGA or EWR) in 2013. We need to load the package first. 
+```{r flights, warning = FALSE}
+library(nycflights13)
+flights
+```
+  
+And we will have a few exercises on the prominent diamonds data set from the ggplot2 package. A dataset containing the prices and other attributes of almost 54,000 diamonds.
+```{r diamonds, echo = FALSE}
+knitr::kable(
+  diamonds[1:3, ], 
+  caption = "The diamonds data set"
+)
+```
+  
+### Our first ggplot
+  
+Equipped with these datasets, we want to answer some very basic questions using plots. Let's use our first graph to answer a question: Do cars with big engines use more fuel than cars with small engines? You probably already have an answer, but try to make your answer precise. What does the relationship between engine size and fuel efficiency look like? Is it positive? Negative? Linear? Nonlinear?  
+  
+We want to plot *mpg*, with **displ** (engine displacement, in litres) on the x-axis and **hwy** (highway miles per gallon) on the y-axis. Every plot starts with `ggplot()`.
+```{r first plot, eval = FALSE}
+ggplot(data = mpg)
+```
+  
+We need to add a geom to this call to map our data points. As we want to have a scatterplot, we need geom_point. We will discuss this soon, so don't worry. We can combine our `ggplot()` call with our specified geom with a **+** sign. Within the geom function, we can specify what should be plotted on the x-axis and what on the y-axis using the `aes()` specification. Aes stands for aestethics. Again, we will cover this soon.
+```{r first plot with data}
+ggplot(data = mpg) +
+  geom_point(aes(x = displ, y = hwy))
+```
+  
+Our first ggplot! Now we can start to answer our question. Does this plot confirm or refute your hypothesis about fuel efficiency and engine size?
+  
+***
+Before we move on from here, let us quickly evaluate what we did here:  
+We started our plot with the function `ggplot()`. `ggplot()` creates a coordinate system that you can add layers to. The first argument of `ggplot()` is the dataset to use in the graph. So `ggplot(data = mpg)` creates an empty graph.
+  
+To showcase our data, we need to add one or more layers to `ggplot()`. We did this by using `geom_point()`, which creates a scatterplot. Ggplot2 comes with many geom function which each add a different type of layer to a plot.  
+  
+Each geom function in ggplot2 takes a mapping argument. This defines how variables in your dataset are mapped to visual properties. The mapping argument is always paired with `aes()`, and the x and y arguments of `aes()` specify which variables to map to the x and y axes. ggplot2 looks for the mapped variables in the data argument, in this case, mpg.  
+  
+In other words, we told ggplot to open an empty plot with mpg as underlying data set, and then we added points by using a geom and specified x and y using the aesthetics mapping argument.  
+
+***
+  
+  
+In our plot, one group of points seems to fall outside of the linear trend. These cars have a higher mileage than you might expect. How can you explain these cars?  
+  
+Let's hypothesize that the cars are hybrids. One way to test this hypothesis is to look at the class value for each car. The `class` variable of the *mpg* dataset classifies cars into groups such as compact, midsize, and SUV. If the outlying points are hybrids, they should be classified as compact cars or, perhaps, subcompact cars (keep in mind that this data was collected before hybrid trucks and SUVs became popular).
+
+You can add a third variable, like class, to a two dimensional scatterplot by mapping it to an aesthetic. An aesthetic is a visual property of the objects in your plot. Aesthetics include things like the size, the shape, or the color of your points. You can display a point in different ways by changing the values of its aesthetic properties.  
+You can convey information about your data by mapping the aesthetics in your plot to the variables in your dataset. For example, you can map the colors of your points to the class variable to reveal the class of each car.
+```{r mpg plot with grouped class}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, colour = class))
+```
+  
+Never disappoint Nussaibah and type *color* instead of the nice british *colour*. The good thing about ggplot however is that it will still understand you, even if you use ~~barbarous~~ american english.  
+  
+To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside `aes()`. ggplot2 will automatically assign a unique level of the aesthetic (here a unique color) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.
 
 
