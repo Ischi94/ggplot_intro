@@ -78,3 +78,29 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point(mapping = aes(color = class)) + 
   geom_smooth()
 ###
+
+# In the previous plot, can you colour the points based on the y-axis, such as points
+# above 30 get a different colour than points below.
+# I don't like the legend, can you remove it?
+###
+
+###
+
+# What is the problem with the following plot. Use geom_bin2d to solve it.
+###
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price))
+###
+
+# Take the line plot and place thick wite line below the geom_line at uempmed = 10. 
+###
+ggplot(economics, aes(x = date, y = uempmed)) + 
+  geom_line() 
+###
+
+# One challenge with the following plot is that the ordering
+# of class is alphabetical, which is not terribly useful. 
+# How could you change the factor levels to be more informative?
+###
+ggplot(mpg, aes(class, hwy)) + geom_boxplot()
+###

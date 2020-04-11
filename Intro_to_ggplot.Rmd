@@ -80,7 +80,7 @@ ggplot(data = mpg)
 ```
   
 We need to add a geom to this call to map our data points. As we want to have a scatterplot, we need geom_point. We will discuss this soon, so don't worry. We can combine our `ggplot()` call with our specified geom with a **+** sign. Within the geom function, we can specify what should be plotted on the x-axis and what on the y-axis using the `aes()` specification. Aes stands for aestethics. Again, we will cover this soon.
-```{r first plot with data}
+```{r first plot with data, fig.align = 'center'}
 ggplot(data = mpg) +
   geom_point(aes(x = displ, y = hwy))
 ```
@@ -109,7 +109,7 @@ Let's hypothesize that the cars are hybrids. One way to test this hypothesis is 
 
 You can add a third variable, like class, to a two dimensional scatterplot by mapping it to an aesthetic. An aesthetic is a visual property of the objects in your plot. Aesthetics include things like the size, the shape, or the color of your points. You can display a point in different ways by changing the values of its aesthetic properties.  
 You can convey information about your data by mapping the aesthetics in your plot to the variables in your dataset. For example, you can map the colors of your points to the class variable to reveal the class of each car.
-```{r mpg plot with grouped class}
+```{r mpg plot with grouped class, fig.align = 'center'}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, colour = class))
 ```
@@ -121,7 +121,7 @@ To map an aesthetic to a variable, associate the name of the aesthetic to the na
 Once you map an aesthetic, ggplot2 takes care of the rest. It selects a reasonable scale to use with the aesthetic, and it constructs a legend that explains the mapping between levels and values. For x and y aesthetics, ggplot2 does not create a legend, but it creates an axis line with tick marks and a label. The axis line acts as a legend; it explains the mapping between locations and values. These pre-specified graphics are normally very nice, but we will later see how you can precisely tailor those for your own needs. 
 
 You can also set the aesthetic properties of your geom manually. For example, we can make all of the points in our plot green:
-```{r mpg green, fig.height = 4}
+```{r mpg green, fig.height = 4, fig.align = 'center'}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy), color = "darkgreen")
 ```
@@ -141,7 +141,7 @@ Stop here and do the aesthetics exercises int the file *exercises_1.R*.
 Another technique for displaying additional categorical variables on a plot is facetting. Facetting creates tables of graphics by splitting the data into subsets and displaying the same graph for each subset.  
   
 There are two types of facetting: grid and wrapped. Wrapped is the most useful, so we'll discuss it here, and you can learn about grid facetting later. To facet a plot you simply add a facetting specification with `facet_wrap()`, which takes the name of a variable preceded by `~`.
-```{r facetting}
+```{r facetting, fig.align = 'center'}
 ggplot(mpg, aes(displ, hwy)) +
   geom_point() +
   facet_wrap( ~ class)
@@ -180,14 +180,14 @@ Instead of using `geom_point` for a scatterplot, we can use other geometries to 
   
   
 Every geom function in ggplot2 takes a mapping argument. However, not every aesthetic works with every geom. You could set the shape of a point, but you couldn't set the *shape* of a line. On the other hand, you could set the linetype of a line. `geom_smooth()` will draw a different line, with a different linetype, for each unique value of the variable that you map to linetype.  
-```{r geom_line, message = FALSE, fig.height = 4}
+```{r geom_line, message = FALSE, fig.height = 4, fig.align = 'center'}
 ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
 ```
   
   
 `geom_smooth()` produces a smooth curve, including an assessment of uncertainty in the form of point-wise confidence intervals shown in grey. If you're not interested in the confidence interval, turn it off with `geom_smooth(se = FALSE)`. 
-```{r without se, message = FALSE, fig.height = 4}
+```{r without se, message = FALSE, fig.height = 4, fig.align = 'center'}
 ggplot(data = mpg) + 
   geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv), se = FALSE)
 ```
@@ -196,7 +196,7 @@ ggplot(data = mpg) +
 Here `geom_smooth()` separates the cars into three lines based on their *drv* value, which describes a car's drivetrain. One line describes all of the points with a 4 value, one line describes all of the points with an f value, and one line describes all of the points with an r value. Here, 4 stands for four-wheel drive, f for front-wheel drive, and r for rear-wheel drive.
 
 If this sounds strange, we can make it more clear by overlaying the lines on top of the raw data and then coloring everything according to drv.
-```{r combined trend, echo = FALSE, message  = FALSE}
+```{r combined trend, echo = FALSE, message  = FALSE, fig.align = 'center'}
 ggplot(data = mpg, aes(x = displ, y = hwy, colour = drv)) + 
   geom_point() +
   geom_smooth(mapping = aes(linetype = drv), se = FALSE)
@@ -205,7 +205,7 @@ ggplot(data = mpg, aes(x = displ, y = hwy, colour = drv)) +
   
 
 Notice that this plot contains two geoms in the same graph! To display multiple geoms in the same plot, add multiple geom functions to ggplot():  
-```{r multiple geoms, message = FALSE, , fig.height = 4}
+```{r multiple geoms, message = FALSE, , fig.height = 4, fig.align = 'center'}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy)) +
   geom_smooth(mapping = aes(x = displ, y = hwy))
@@ -213,7 +213,7 @@ ggplot(data = mpg) +
   
   
 This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display cty instead of hwy. You'd need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to ggplot(). ggplot2 will treat these mappings as global mappings that apply to each geom in the graph. In other words, this code will produce the same plot as the previous code:
-```{r nice multiple geoms, eval = FALSE}
+```{r nice multiple geoms, eval = FALSE, fig.align = 'center'}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
   geom_point() + 
   geom_smooth()
@@ -221,7 +221,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   
   
 If you place mappings in a geom function, ggplot2 will treat them as local mappings for the layer. It will use these mappings to extend or overwrite the global mappings for that layer only. This makes it possible to display different aesthetics in different layers.
-```{r overwrite layers, message = FALSE, fig.height = 4}
+```{r overwrite layers, message = FALSE, fig.height = 4, fig.align = 'center'}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
   geom_point(mapping = aes(color = class)) + 
   geom_smooth()
@@ -234,7 +234,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   
   
 When a set of data includes a categorical variable and one or more continuous variables, you will probably be interested to know how the values of the continuous variables vary with the levels of the categorical variable. Say we're interested in seeing how fuel economy varies within cars that have the same kind of drivetrain. We might start with a scatterplot like this:
-```{r scatter, , fig.height = 3, fig.width = 3}
+```{r scatter, , fig.height = 3, fig.width = 3, fig.align = 'center'}
 ggplot(mpg, aes(drv, hwy)) + 
   geom_point()
 ```
@@ -260,13 +260,130 @@ ggplot(mpg, aes(drv, hwy)) + geom_violin()
   
   
 Histograms and frequency polygons show the distribution of a single numeric variable. They provide more information about the distribution of a single group than boxplots do, at the expense of needing more space.  
-```{r histograms, fig.show = 'hold', out.width = "50%}
+```{r histograms, fig.show = 'hold', out.width = "50%"}
 ggplot(mpg, aes(hwy)) + geom_histogram()
 ggplot(mpg, aes(hwy)) + geom_freqpoly()
-```
+```  
+  
+  
+Both histograms and frequency polygons work in the same way: they bin the data, then count the number of observations in each bin. The only difference is the display: histograms use bars and frequency polygons use lines.
 
+You can control the width of the bins with the *binwidth* argument (if you don't want evenly spaced bins you can use the breaks argument). It is very important to experiment with the bin width. The default just splits your data into 30 bins, which is unlikely to be the best choice. You should always try many bin widths, and you may find you need multiple bin widths to tell the full story of your data.
 
+```{r histograms with bins, fig.show = 'hold', out.width = "50%"}
+ggplot(mpg, aes(hwy)) + 
+  geom_freqpoly(binwidth = 2.5)
+ggplot(mpg, aes(hwy)) + 
+  geom_freqpoly(binwidth = 1)
+```  
+  
+  
+  
+#### Bar charts  
+  
+  
+The discrete analogue of the histogram is the bar chart, `geom_bar()`. It's easy to use:
+```{r barplot, fig.height = 3, fig.align = 'center'}
+ggplot(diamonds, aes(cut)) + 
+  geom_bar()
+```  
+  
+  
+Note that we plotted `counts` on the y axis, but it is not included in the data set we fed into ggplot. `geom_bar` goes through your data and counts by itself.
+  
+  
+Bar charts can be confusing because there are two rather different plots that are both commonly called bar charts. The above form expects you to have unsummarised data, and each observation contributes one unit to the height of each bar. The other form of bar chart is used for presummarised data. For example, you might have three drugs with their average effect:
+```{r tribble drugs}
+drugs <- tribble(
+  ~drug, ~effect, 
+#---- --|-----------
+  "a",     4.2,
+  "b",     9.7, 
+  "c",     6.1
+)
+```  
+  
+  
+To display this pre-summarised data we need to use `geom_col` instead of `geom_bar`: 
+```{r geom_col, fig.align = 'center', fig.height = 3, fig.width=3}
+ggplot(drugs) +
+  geom_col(aes(drug, effect))
+```  
+  
+  
+  
+This reveals a strange but awesome behaviour of ggplot2: Some geoms plot the raw data, like `geom_col` does, while other geoms go through your data and calculate their own input:
 
+* bar charts, histograms, and frequency polygons bin your data and then plot bin counts, the number of points that fall in each bin.  
+  
+* smoothers fit a model to your data and then plot predictions from the model.  
+  
+boxplots compute a robust summary of the distribution and then display a specially formatted box.  
+  
+The algorithm used to calculate new values for a graph is called a **stat**, short for statistical transformation. The figure below describes how this process works with `geom_bar()`.  
+  
+  
+ ![](https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png)
+  
+  
+You can learn which stat a geom uses by inspecting the default value for the *stat* argument. For example, `?geom_bar` shows that the default value for stat is *count*, which means that `geom_bar()` uses `stat_count()`. `stat_count()` is documented on the same page as `geom_bar()`, and if you scroll down you can find a section called *Computed variables*"*. That describes how it computes two new variables: count and prop.
+
+You can generally use geoms and stats interchangeably. For example, you can recreate our previous plot using `stat_count()` instead of `geom_bar()`. 
+
+```{r barplot with stats, fig.height = 3, fig.align = 'center'}
+ggplot(diamonds, aes(cut)) + 
+  stat_count()
+```  
+  
+  
+  
+This works because every geom has a default stat; and every stat has a default geom. This means that you can typically use geoms without worrying about the underlying statistical transformation. There are three reasons you might need to use a stat explicitly:
+
+1. You might want to override the default stat. This would allow us to use `geom_bar` to plot our pre-summarised drug data: 
+```{r geom_col with stats, fig.align = 'center', fig.height = 3, fig.width=3}
+ggplot(drugs) +
+  geom_bar(aes(drug, effect), stat = "identity")
+```  
+
+2. You might want to override the default mapping from transformed variables to aesthetics. For example, you might want to display a bar chart of proportion, rather than count:
+
+```{r override stats, fig.align='center', fig.height=4}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = stat(prop), group = 1))
+```  
+  
+To find the variables computed by the stat, look for the help section titled "computed variables".  
+  
+  
+3. You might want to draw greater attention to the statistical transformation in your code. For example, you might use `stat_summary()`, which summarises the y values for each unique x value, to draw attention to the summary that you're computing:
+```{r summary stats, fig.align='center', fig.height=4}
+ggplot(data = diamonds) + 
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )
+```  
+  
+  
+  
+#### Time series with lines  
+  
+  
+Line and path plots are typically used for time series data. Line plots join the points from left to right, while path plots join them in the order that they appear in the dataset (in other words, a line plot is a path plot of the data sorted by x value). Line plots usually have time on the x-axis, showing how a single variable has changed over time. Path plots show how two variables have simultaneously changed over time, with time encoded in the way that observations are connected.
+
+Because the year variable in the mpg dataset only has two values, we'll show some time series plots using the economics dataset, which contains economic data on the US measured over the last 40 years.
+
+```{r line plot, fig.height=4, fig.align='center'}
+ggplot(economics, aes(x = date, y = uempmed)) + 
+  geom_line() 
+```  
+  
+  
+  
+
+  
 
 
 
