@@ -67,9 +67,9 @@ knitr::kable(
   caption = "The diamonds data set"
 )
 ```
-  
-  
-  
+    
+     
+    
 ### Our first ggplot
   
 Equipped with these datasets, we want to answer some very basic questions using plots. Let's use our first graph to answer a question: Do cars with big engines use more fuel than cars with small engines? You probably already have an answer, but try to make your answer precise. What does the relationship between engine size and fuel efficiency look like? Is it positive? Negative? Linear? Nonlinear?  
@@ -121,12 +121,12 @@ To map an aesthetic to a variable, associate the name of the aesthetic to the na
 Once you map an aesthetic, ggplot2 takes care of the rest. It selects a reasonable scale to use with the aesthetic, and it constructs a legend that explains the mapping between levels and values. For x and y aesthetics, ggplot2 does not create a legend, but it creates an axis line with tick marks and a label. The axis line acts as a legend; it explains the mapping between locations and values. These pre-specified graphics are normally very nice, but we will later see how you can precisely tailor those for your own needs. 
 
 You can also set the aesthetic properties of your geom manually. For example, we can make all of the points in our plot green:
-```{r mpg green}
+```{r mpg green, fig.height = 4}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy), color = "darkgreen")
 ```
   
-Here, the color doesn't convey information about a variable, but only changes the appearance of the plot. To set an aesthetic manually, set the aesthetic by name as an argument of your geom function; i.e. it goes outside of `aes()`.
+Here, the color doesn't convey information about a variable, but only changes the appearance of the plot. To set an aesthetic manually, set the aesthetic by name as an argument of your geom function; i.e. it goes outside of `aes()`. You can use aesthetics for colour, shape, and size.
 
 ***  
   
@@ -134,6 +134,138 @@ Stop here and do the aesthetics exercises int the file *exercises_1.R*.
   
 ***
   
+  
+### Facetting
+  
+  
+Another technique for displaying additional categorical variables on a plot is facetting. Facetting creates tables of graphics by splitting the data into subsets and displaying the same graph for each subset.  
+  
+There are two types of facetting: grid and wrapped. Wrapped is the most useful, so we'll discuss it here, and you can learn about grid facetting later. To facet a plot you simply add a facetting specification with `facet_wrap()`, which takes the name of a variable preceded by `~`.
+```{r facetting}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  facet_wrap( ~ class)
+```
+  
+  
+Facetting is an alternative to using aesthetics (like colour, shape or size) to differentiate groups. Both techniques have strengths and weaknesses, based around the relative positions of the subsets. With facetting, each group is quite far apart in its own panel, and there is no overlap between the groups. This is good if the groups overlap a lot, but it does make small differences harder to see. When using aesthetics to differentiate groups, the groups are close together and may overlap, but small differences are easier to see.
+
+
+***  
+  
+Stop here and do the facetting exercises.  
+  
+***
+  
+  
+  
+### Geometries
+  
+  
+Instead of using `geom_point` for a scatterplot, we can use other geometries to produce a different type of plot. That's a great guess! This isn't an exhaustive list, but should cover the most commonly used plot types.  
+  
+* `geom_smooth()` fits a smoother to the data and displays the smooth and its standard error.  
+  
+* `geom_boxplot()` produces a box-and-whisker plot to summarise the distribution of a set of points.  
+  
+* `geom_histogram()` and `geom_freqpoly()` show the distribution of continuous variables.  
+  
+* `geom_bar()` shows the distribution of categorical variables.  
+  
+* `geom_path()` and `geom_line()` draw lines between the data points. A line plot is constrained to produce lines that travel from left to right, while paths can go in any direction. Lines are typically used to explore how things change over time.  
+  
+  
+  
+#### Trend lines  
+  
+  
+Every geom function in ggplot2 takes a mapping argument. However, not every aesthetic works with every geom. You could set the shape of a point, but you couldn't set the *shape* of a line. On the other hand, you could set the linetype of a line. `geom_smooth()` will draw a different line, with a different linetype, for each unique value of the variable that you map to linetype.  
+```{r geom_line, message = FALSE, fig.height = 4}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+  
+  
+`geom_smooth()` produces a smooth curve, including an assessment of uncertainty in the form of point-wise confidence intervals shown in grey. If you're not interested in the confidence interval, turn it off with `geom_smooth(se = FALSE)`. 
+```{r without se, message = FALSE, fig.height = 4}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv), se = FALSE)
+```
+  
+  
+Here `geom_smooth()` separates the cars into three lines based on their *drv* value, which describes a car's drivetrain. One line describes all of the points with a 4 value, one line describes all of the points with an f value, and one line describes all of the points with an r value. Here, 4 stands for four-wheel drive, f for front-wheel drive, and r for rear-wheel drive.
+
+If this sounds strange, we can make it more clear by overlaying the lines on top of the raw data and then coloring everything according to drv.
+```{r combined trend, echo = FALSE, message  = FALSE}
+ggplot(data = mpg, aes(x = displ, y = hwy, colour = drv)) + 
+  geom_point() +
+  geom_smooth(mapping = aes(linetype = drv), se = FALSE)
+```
+  
+  
+
+Notice that this plot contains two geoms in the same graph! To display multiple geoms in the same plot, add multiple geom functions to ggplot():  
+```{r multiple geoms, message = FALSE, , fig.height = 4}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+  
+  
+This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display cty instead of hwy. You'd need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to ggplot(). ggplot2 will treat these mappings as global mappings that apply to each geom in the graph. In other words, this code will produce the same plot as the previous code:
+```{r nice multiple geoms, eval = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+```
+  
+  
+If you place mappings in a geom function, ggplot2 will treat them as local mappings for the layer. It will use these mappings to extend or overwrite the global mappings for that layer only. This makes it possible to display different aesthetics in different layers.
+```{r overwrite layers, message = FALSE, fig.height = 4}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth()
+```
+  
+  
+  
+  
+#### Boxplots and jittered points  
+  
+  
+When a set of data includes a categorical variable and one or more continuous variables, you will probably be interested to know how the values of the continuous variables vary with the levels of the categorical variable. Say we're interested in seeing how fuel economy varies within cars that have the same kind of drivetrain. We might start with a scatterplot like this:
+```{r scatter, , fig.height = 3, fig.width = 3}
+ggplot(mpg, aes(drv, hwy)) + 
+  geom_point()
+```
+  
+  
+Because there are few unique values of both drv and hwy, there is a lot of overplotting. Many points are plotted in the same location, and it's difficult to see the distribution. There are three useful techniques that help alleviate the problem:
+
+* Jittering, `geom_jitter()`, adds a little random noise to the data which can help avoid overplotting.  
+  
+* Boxplots, `geom_boxplot()`, summarise the shape of the distribution with a handful of summary statistics.  
+  
+* Violin plots, `geom_violin()`, show a compact representation of the "density" of the distribution, highlighting the areas where more points are found.  
+  
+  
+```{r three plots, fig.show = 'hold', out.width = "33%"}
+ggplot(mpg, aes(drv, hwy)) + geom_jitter()
+ggplot(mpg, aes(drv, hwy)) + geom_boxplot()
+ggplot(mpg, aes(drv, hwy)) + geom_violin()
+```  
+  
+  
+#### Histograms and frequency polygons  
+  
+  
+Histograms and frequency polygons show the distribution of a single numeric variable. They provide more information about the distribution of a single group than boxplots do, at the expense of needing more space.  
+```{r histograms, fig.show = 'hold', out.width = "50%}
+ggplot(mpg, aes(hwy)) + geom_histogram()
+ggplot(mpg, aes(hwy)) + geom_freqpoly()
+```
+
+
 
 
 

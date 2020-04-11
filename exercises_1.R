@@ -38,3 +38,43 @@ ggplot(data = mpg) +
 ###
 
 ###
+
+
+# Can you set the aesthetics to a variable not included in the plot
+###
+
+###
+
+
+# Facetting ---------------------------------------------------------------
+
+# What happens if you try to facet by a continuous variable like hwy? 
+###
+
+###
+
+# Use facetting to explore the 3-way relationship between fuel economy, engine size, 
+# and number of cylinders. 
+###
+
+###
+
+
+
+# Geometries --------------------------------------------------------------
+
+# An important argument to geom_smooth() is the method, which allows you to choose 
+# which type of model is used to fit the smooth curve.
+# Look into the documentation and change the method in our plot to a linear model. 
+###
+
+###
+
+# Can you overwrite the data argument in a subsequent geom? 
+# Filter the mpg dataset for the subcompact cars within geom_smooth to display only a 
+# subset of the data. 
+###
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth()
+###
