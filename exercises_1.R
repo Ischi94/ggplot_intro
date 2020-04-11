@@ -21,8 +21,20 @@ ggplot(data = mpg) +
 
 ###
 
-# What happens when you map a level to an aesthetic outsid of aes()?
+# What happens when you map a level to an aesthetic outside of aes()?
 ###
 
 ###
 
+
+# Map a continuous variable to color, size, and shape. 
+# How do these aesthetics behave differently for categorical vs. continuous variables?
+###
+
+###
+
+# What happens if you map an aesthetic to something other than a variable name, 
+# like aes(colour = displ < 5)? Note, you'll also need to specify x and y.
+###
+
+###

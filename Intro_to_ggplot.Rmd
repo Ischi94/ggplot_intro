@@ -68,6 +68,8 @@ knitr::kable(
 )
 ```
   
+  
+  
 ### Our first ggplot
   
 Equipped with these datasets, we want to answer some very basic questions using plots. Let's use our first graph to answer a question: Do cars with big engines use more fuel than cars with small engines? You probably already have an answer, but try to make your answer precise. What does the relationship between engine size and fuel efficiency look like? Is it positive? Negative? Linear? Nonlinear?  
@@ -85,7 +87,8 @@ ggplot(data = mpg) +
   
 Our first ggplot! Now we can start to answer our question. Does this plot confirm or refute your hypothesis about fuel efficiency and engine size?
   
-***
+***  
+
 Before we move on from here, let us quickly evaluate what we did here:  
 We started our plot with the function `ggplot()`. `ggplot()` creates a coordinate system that you can add layers to. The first argument of `ggplot()` is the dataset to use in the graph. So `ggplot(data = mpg)` creates an empty graph.
   
@@ -97,6 +100,8 @@ In other words, we told ggplot to open an empty plot with mpg as underlying data
 
 ***
   
+  
+### Aesthetic mappings  
   
 In our plot, one group of points seems to fall outside of the linear trend. These cars have a higher mileage than you might expect. How can you explain these cars?  
   
@@ -111,6 +116,26 @@ ggplot(data = mpg) +
   
 Never disappoint Nussaibah and type *color* instead of the nice british *colour*. The good thing about ggplot however is that it will still understand you, even if you use ~~barbarous~~ american english.  
   
-To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside `aes()`. ggplot2 will automatically assign a unique level of the aesthetic (here a unique color) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.
+To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside `aes()`. ggplot2 will automatically assign a unique level of the aesthetic (here a unique color) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.  
+  
+Once you map an aesthetic, ggplot2 takes care of the rest. It selects a reasonable scale to use with the aesthetic, and it constructs a legend that explains the mapping between levels and values. For x and y aesthetics, ggplot2 does not create a legend, but it creates an axis line with tick marks and a label. The axis line acts as a legend; it explains the mapping between locations and values. These pre-specified graphics are normally very nice, but we will later see how you can precisely tailor those for your own needs. 
+
+You can also set the aesthetic properties of your geom manually. For example, we can make all of the points in our plot green:
+```{r mpg green}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "darkgreen")
+```
+  
+Here, the color doesn't convey information about a variable, but only changes the appearance of the plot. To set an aesthetic manually, set the aesthetic by name as an argument of your geom function; i.e. it goes outside of `aes()`.
+
+***  
+  
+Stop here and do the aesthetics exercises int the file *exercises_1.R*.  
+  
+***
+  
+
+
+
 
 
