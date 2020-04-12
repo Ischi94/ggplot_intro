@@ -1,5 +1,5 @@
 ---
-title: "Introduction to ggplot2"
+title: "Introduction to ggplot2 (Part 1)"
 author: "Gregor Mathes"
 date: "2020-15-04"
 output:
@@ -45,8 +45,8 @@ library(tidyverse)
 
 ### Data  
   
-We will use three data sets that either come with base R or the tidyverse.  
-The *mpg* data contains fuel economy data from 1999 to 2008 for 38 popular models of cars. This dataset is attached to the ggplot2 package  
+We will use three data sets that either come with the ggplot2 package.    
+The *mpg* data contains fuel economy data from 1999 to 2008 for 38 popular models of cars. This dataset is attached to the ggplot2 package.   
 ```{r mtcars, echo = FALSE}
 knitr::kable(
   mpg[1:3, ], 
@@ -54,13 +54,15 @@ knitr::kable(
 )
 ```
   
-Another popular dataset is the *flights* data from the *nycflights13* package. It contains on-time data for all flights that departed NYC (i.e. JFK, LGA or EWR) in 2013. We need to load the package first. 
-```{r flights, warning = FALSE}
-library(nycflights13)
-flights
+Another popular dataset is the *economics* data. This dataset was produced from US economic time series data including unemployment rate. 
+```{r flights, echo = FALSE}
+knitr::kable(
+  economics[1:3, ], 
+  caption = "The economics data set"
+)
 ```
   
-And we will have a few exercises on the prominent diamonds data set from the ggplot2 package. A dataset containing the prices and other attributes of almost 54,000 diamonds.
+And we will have a few exercises on the prominent diamonds data set. A dataset containing the prices and other attributes of almost 54,000 diamonds.
 ```{r diamonds, echo = FALSE}
 knitr::kable(
   diamonds[1:3, ], 
@@ -378,7 +380,13 @@ Because the year variable in the mpg dataset only has two values, we'll show som
 ```{r line plot, fig.height=4, fig.align='center'}
 ggplot(economics, aes(x = date, y = uempmed)) + 
   geom_line() 
-```  
+```   
+  
+  
+  
+We end the first part of our ggplot2 webinar here and continue with part 2 next week. So far, we've learned how to **call a ggplot** with `ggplot()` and add various **geoms** to it. We've learned how to map data to **aesthetics** to answer a few basic questions. An alternative approach to mapping aesthetics was **facetting**. We looked a bit under the hood of ggplot when we examined the **statistics** of each geom. Equipped with these tools, we can now produce a lot of different and complex plots.  
+In the next part, we will try to make these plots visually pleasing. You will learn to modify the look of a ggplot so that it fits your needs. In the end, you will be able to produce publication ready plots within R. Additionally, we will learn how to safe those plots. 
+
   
   
   
