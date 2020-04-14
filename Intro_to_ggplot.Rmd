@@ -84,7 +84,7 @@ ggplot(data = mpg)
 We need to add a geom to this call to map our data points. As we want to have a scatterplot, we need geom_point. We will discuss this soon, so don't worry. We can combine our `ggplot()` call with our specified geom with a **+** sign. Within the geom function, we can specify what should be plotted on the x-axis and what on the y-axis using the `aes()` specification. Aes stands for aestethics. Again, we will cover this soon.
 ```{r first plot with data, fig.align = 'center'}
 ggplot(data = mpg) +
-  geom_point(aes(x = displ, y = hwy))
+  geom_point(mapping = aes(x = displ, y = hwy))
 ```
   
 Our first ggplot! Now we can start to answer our question. Does this plot confirm or refute your hypothesis about fuel efficiency and engine size?
@@ -118,17 +118,17 @@ ggplot(data = mpg) +
   
 Never disappoint Nussaibah and type *color* instead of the nice british *colour*. The good thing about ggplot however is that it will still understand you, even if you use ~~barbarous~~ american english.  
   
-To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside `aes()`. ggplot2 will automatically assign a unique level of the aesthetic (here a unique color) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.  
+To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside `aes()`. ggplot2 will automatically assign a unique level of the aesthetic (here a unique colour) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.  
   
 Once you map an aesthetic, ggplot2 takes care of the rest. It selects a reasonable scale to use with the aesthetic, and it constructs a legend that explains the mapping between levels and values. For x and y aesthetics, ggplot2 does not create a legend, but it creates an axis line with tick marks and a label. The axis line acts as a legend; it explains the mapping between locations and values. These pre-specified graphics are normally very nice, but we will later see how you can precisely tailor those for your own needs. 
 
 You can also set the aesthetic properties of your geom manually. For example, we can make all of the points in our plot green:
 ```{r mpg green, fig.height = 4, fig.align = 'center'}
 ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy), color = "darkgreen")
+  geom_point(mapping = aes(x = displ, y = hwy), colour = "darkgreen")
 ```
   
-Here, the color doesn't convey information about a variable, but only changes the appearance of the plot. To set an aesthetic manually, set the aesthetic by name as an argument of your geom function; i.e. it goes outside of `aes()`. You can use aesthetics for colour, shape, and size.
+Here, the colour doesn't convey information about a variable, but only changes the appearance of the plot. To set an aesthetic manually, set the aesthetic by name as an argument of your geom function; i.e. it goes outside of `aes()`. You can use aesthetics for colour, shape, and size.
 
 ***  
   
@@ -274,9 +274,9 @@ You can control the width of the bins with the *binwidth* argument (if you don't
 
 ```{r histograms with bins, fig.show = 'hold', out.width = "50%"}
 ggplot(mpg, aes(hwy)) + 
-  geom_freqpoly(binwidth = 2.5)
+  geom_histogram(binwidth = 2.5)
 ggplot(mpg, aes(hwy)) + 
-  geom_freqpoly(binwidth = 1)
+  geom_histogram(binwidth = 1)
 ```  
   
   
@@ -328,7 +328,7 @@ The algorithm used to calculate new values for a graph is called a **stat**, sho
  ![](https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png)
   
   
-You can learn which stat a geom uses by inspecting the default value for the *stat* argument. For example, `?geom_bar` shows that the default value for stat is *count*, which means that `geom_bar()` uses `stat_count()`. `stat_count()` is documented on the same page as `geom_bar()`, and if you scroll down you can find a section called *Computed variables*"*. That describes how it computes two new variables: count and prop.
+You can learn which stat a geom uses by inspecting the default value for the *stat* argument. For example, `?geom_bar` shows that the default value for stat is *count*, which means that `geom_bar()` uses `stat_count()`. `stat_count()` is documented on the same page as `geom_bar()`, and if you scroll down you can find a section called *Computed variables*. That describes how it computes two new variables: count and prop.
 
 You can generally use geoms and stats interchangeably. For example, you can recreate our previous plot using `stat_count()` instead of `geom_bar()`. 
 
@@ -342,14 +342,14 @@ ggplot(diamonds, aes(cut)) +
 This works because every geom has a default stat; and every stat has a default geom. This means that you can typically use geoms without worrying about the underlying statistical transformation. There are three reasons you might need to use a stat explicitly:
 
 1. You might want to override the default stat. This would allow us to use `geom_bar` to plot our pre-summarised drug data: 
-```{r geom_col with stats, fig.align = 'center', fig.height = 3, fig.width=3}
+```{r geom_col with stats, fig.align = 'center', fig.height = 3, fig.width=4}
 ggplot(drugs) +
   geom_bar(aes(drug, effect), stat = "identity")
 ```  
 
 2. You might want to override the default mapping from transformed variables to aesthetics. For example, you might want to display a bar chart of proportion, rather than count:
 
-```{r override stats, fig.align='center', fig.height=4}
+```{r override stats, fig.align='center', fig.height=3, fig.width=4}
 ggplot(data = diamonds) + 
   geom_bar(mapping = aes(x = cut, y = stat(prop), group = 1))
 ```  
@@ -360,12 +360,10 @@ To find the variables computed by the stat, look for the help section titled "co
 3. You might want to draw greater attention to the statistical transformation in your code. For example, you might use `stat_summary()`, which summarises the y values for each unique x value, to draw attention to the summary that you're computing:
 ```{r summary stats, fig.align='center', fig.height=4}
 ggplot(data = diamonds) + 
-  stat_summary(
-    mapping = aes(x = cut, y = depth),
-    fun.min = min,
-    fun.max = max,
-    fun = median
-  )
+  stat_summary(mapping = aes(x = cut, y = depth),
+               fun.min = min,
+               fun.max = max,
+               fun = median)
 ```  
   
   
