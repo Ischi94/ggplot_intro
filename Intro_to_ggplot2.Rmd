@@ -1,0 +1,56 @@
+---
+title: "Introduction to ggplot2 (Part 2)"
+author: "Gregor Mathes"
+date: "2020-21-04"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+    number_sections: true  
+    theme: journal
+  github_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Overview
+
+This is the second part of the introduction to ggplot2, written for the palaeobiology master students at Uni Erlangen. You can find the **first part** on the [evolvED homepage](https://www.evolv-ed.net/post/introduction-to-ggplot2-part-i/).  
+Here, we will dive a little bit deeper into ggplot2 and see how we can modify the default output of ggplot. In the end you will be able to personalise a plot to fit your needs, enabling you to produce publication ready plots within the R environment.  
+You can find all exercises, solutions, and source code for this introduction in my [github repository](https://github.com/Ischi94/ggplot_intro).   
+Please note that ggplot might be a gateway drug to the tidyverse. Unfortunately, this is neither an introduction to the tidyverse nor an exhaustive report showing you every detail of ggplots. If needed, I can provide an intro to the tidyverse within the next weeks. Ggplot offers the chance to produce *any* graph you can think of. Use your power wisely.  
+  
+  
+# Retrospect  
+  
+In part 1, we've learned how to **call a ggplot** with `ggplot()` and add various **layers** to it. We've learned how to map data to **aesthetics** to answer a few basic questions. An alternative approach to mapping aesthetics was **facetting**. We dealt with various **geometries** including trend lines, boxplots, histograms, barplots, and line plots. We looked a bit under the hood of ggplot when we examined the **statistics** of each geom.  
+  
+  
+# Scales  
+  
+Scales control the mapping from data to aesthetics. They take our data and transform it into visuals, like size, colour, position or shape. Scales also produce the axes and legends. We already produced plots without actively modifying the underlying scales, which still resulted in nice plots. However, modifying scales gives us much more control, and is the first thing we should think about when we want to modify a plot. 
+  
+  
+## Modifying scales  
+  
+Whenever we don't specify a scale in our `ggplot()` call, ggplot uses the default scale. If we want to override the defaults, we’ll need to add the scale ourself. We do that with our **+** operator.  
+
+```{r scale intro, eval=FALSE}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point(aes(colour = class)) + 
+  scale_x_continuous("This is my label for the x-axis") +
+  scale_y_continuous("This is my label for the y-axis")
+```  
+  
+  
+There exists a specific naming scheme for scales made up of three pieces, each separated by an underscore "_".  
+  
+1. `scale`
+2. The name of the aesthetic (e.g., `colour`, `shape` or `x`)
+3. The name of the scale (e.g., `continuous`, `discrete`, `brewer`)  
+  
+RStudio makes your life easier by giving you suggestions when you type `scale`. Just select the one you need. 
+
