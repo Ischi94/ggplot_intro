@@ -48,8 +48,10 @@ ggplot(mpg, aes(displ, hwy)) +
   
 There exists a specific naming scheme for scales made up of three pieces, each separated by an underscore "_".  
   
-1. `scale`
-2. The name of the aesthetic (e.g., `colour`, `shape` or `x`)
+1. `scale`  
+  
+2. The name of the aesthetic (e.g., `colour`, `shape` or `x`)  
+  
 3. The name of the scale (e.g., `continuous`, `discrete`, `brewer`)  
   
 RStudio makes your life easier by giving you suggestions when you type `scale`. Just select the one you need.  
@@ -114,10 +116,69 @@ my_plot + scale_colour_continuous(breaks = c(15, 30))
 my_plot + scale_colour_continuous(breaks = c(15, 30), labels = c("low", "high"))
 ```  
   
-## Legends  
   
+## Scale transformations  
+  
+  
+## Colours  
+  
+  
+  
+# Legends  
+  
+While axes and legends share most parameters, some options only apply to legends, as they are more complex than axes. 
 
+1. A legend can display multiple aesthetics (e.g. colour and shape), from multiple layers, and the symbol displayed in a legend varies based on the geom used in the layer.  
+  
+2. Axes always appear in the same place. Legends can appear in different places, so you need some global way of controlling them.  
+  
+3. Legends have considerably more details that can be tweaked, e.g., vertical vs  horizontal display, number of columns, size of the keys...  
+  
+  
+## Layout  
+  
+A number of settings that affect the overall display of the legends are controlled through the theme system. You’ll learn more about themes towards the end of this file, but for now, all you need to know is that you modify theme settings with the `theme()` function.
 
+The position and justification of legends are controlled by the theme setting `legend.position`, which takes values “right”, “left”, “top”, “bottom”, or “none” (no legend).
 
+```{r legend positions, fig.show = 'hold', out.width = "33%", fig.height=6}
+my_plot + theme(legend.position = "right") # default
+my_plot + theme(legend.position = "bottom") 
+my_plot + theme(legend.position = "none") 
+```  
+  
+Setting the `legend.position` to "none" within the `theme()` call has the advantage that you don't have to set `show.legend = FALSE` for every geom.  
+  
+  
+## Guides  
+  
+The guide functions, `guide_colourbar()` and `guide_legend()`, offer additional control over the fine details of the legend. As you sometimes want the geoms in the legend to display differently to the geoms in the plot, you can override them and set them to a new value. You can do this using the `override.aes` parameter of `guide_legend()`.  
+  
+```{r new my plot alpha, echo=FALSE}
+my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = class), alpha = 0.1)
+```
 
+```{r alpha override, fig.show = 'hold', out.width = "50%", fig.height=6}
+my_plot
+my_plot + guides(colour = guide_legend(override.aes = list(alpha = 1)))
+```  
+  
+You can override the default guide using the guide argument of the corresponding scale function, or more conveniently, the `guides()` helper function. `guides()` works like `labs()`: you can override the default guide associated with each aesthetic.  
+  
+```{r reset my, echo=FALSE}
+my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = cty))
+```
 
+```{r guide legend, fig.show = 'hold', out.width = "50%", fig.height=6}
+my_plot
+my_plot + scale_colour_continuous(guide = guide_legend(title = "LEFT", title.position = "left"))
+``` 
+
+The most useful options for guide_legend are:
+1. `nrow` or `ncol` which specify the dimensions of the table. `byrow` controls how the table is filled: `FALSE` fills it by column (the default), `TRUE` fills it by row.  
+  
+2. `reverse` reverses the order of the keys. This is particularly useful when you have stacked bars because the default stacking and legend orders are different by default.  
+  
+3. `override.aes` overrides some of the aesthetic settings derived from each layer. This is useful if you want to make the elements in the legend more visually prominent. 
+
+4. `keywidth` and `keyheight` (along with `default.unit`) allow you to specify the size of the keys. These are grid units, e.g. `unit(1, "cm")`. 
