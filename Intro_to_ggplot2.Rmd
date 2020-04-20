@@ -31,12 +31,12 @@ In part 1, we've learned how to **call a ggplot** with `ggplot()` and add variou
   
 # Scales  
   
-Scales control the mapping from data to aesthetics. They take our data and transform it into visuals, like size, colour, position or shape. Scales also produce the axes and legends. We already produced plots without actively modifying the underlying scales, which still resulted in nice plots. However, modifying scales gives us much more control, and is the first thing we should think about when we want to modify a plot. 
+Scales control the mapping from data to aesthetics. They take your data and transform it into visuals, like size, colour, position or shape. Scales also produce the axes and legends. We already produced plots without actively modifying the underlying scales, which still resulted in nice plots. However, modifying scales gives us much more control, and is the first thing you should think about when you want to modify a plot. 
   
   
 ## Modifying scales  
   
-Whenever we don't specify a scale in our `ggplot()` call, ggplot uses the default scale. If we want to override the defaults, we’ll need to add the scale ourself. We do that with our **+** operator.  
+Whenever we don't specify a scale in our `ggplot()` call, ggplot uses the default scale. If you want to override the defaults, youll’ll need to add the scale ourself. You can do that with our **+** operator.  
 
 ```{r scale intro, eval=FALSE}
 ggplot(mpg, aes(displ, hwy)) + 
@@ -52,5 +52,72 @@ There exists a specific naming scheme for scales made up of three pieces, each s
 2. The name of the aesthetic (e.g., `colour`, `shape` or `x`)
 3. The name of the scale (e.g., `continuous`, `discrete`, `brewer`)  
   
-RStudio makes your life easier by giving you suggestions when you type `scale`. Just select the one you need. 
+RStudio makes your life easier by giving you suggestions when you type `scale`. Just select the one you need.  
+  
+  
+## Guides  
+  
+The component of a scale that we want to modify quite often is the **guide**, the axis or legend associated with the scale. As mentioned before, ggplot produces those for you by default (*note that this is a big difference to base R, where you have to do everything by your own when it comes to legends*). The important part here is that you used a clear mapping between your data and aesthetics, so that ggplot understands what we want it to do. We can modify every component of the axis and legend: 
+![](https://ggplot2-book.org/diagrams/scale-guides.png).  
+  
+  
+### Labels/ titles  
+  
+The first argument to the scale function, `name`, is the axes/legend title:  
+  
+```{r first lab, fig.align='center', fig.height=3, fig.width=7}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point(aes(colour = class)) + 
+  scale_x_continuous("This is my label \n for the x-axis") +
+  scale_y_continuous("Hello World!")
+```  
+  
+  
+As you will do this quite ofte, people have already produced shortcuts for you: `xlab()`, `ylab()` and `labs()`.  
+  
+```{r, labs shortcut, fig.show = 'hold', out.width = "50%"}
+my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = class))
+my_plot + 
+  xlab("My first X axis") + 
+  ylab("My first Y axis")
+my_plot + labs(x = "My second X axis", y = "My second Y axis", colour = "My own\nlegend")
+```  
+  
+  
+To remove axis labels, you have to set `x` or `y` = `NULL`. If you set them = `""`, you will produce an empty space instead of removing the label.  
+  
+  
+### Breaks/ labels  
+  
+The `breaks` argument controls which values appear as tick marks on axes and keys on legends. Each break has an associated `label`, controlled by the `labels` argument. If you set `labels`, you must also set `breaks`; otherwise, if data changes, the breaks will no longer align with the labels.  
+  
+```{r change setting my plot, echo=FALSE}
+my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = class), show.legend = FALSE) + theme(axis.text=element_text(size=16, face="bold"))
+```
+
+```{r breaks, fig.show = 'hold', out.width = "33%", fig.height=6}
+my_plot
+my_plot + scale_x_continuous(breaks = c(2, 4, 6))
+my_plot + scale_x_continuous(breaks = c(2, 4, 6), labels = c("two", "four", "Got'ya"))
+``` 
+  
+  
+Same with legend breaks:  
+  
+  
+```{r change setting again my plot, echo=FALSE}
+my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = cty)) + theme(legend.text=element_text(size=16, face="bold"))
+```  
+```{r legend breaks, fig.show = 'hold', out.width = "33%", fig.height=6}
+my_plot
+my_plot + scale_colour_continuous(breaks = c(15, 30))
+my_plot + scale_colour_continuous(breaks = c(15, 30), labels = c("low", "high"))
+```  
+  
+## Legends  
+  
+
+
+
+
 
