@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Overview
 
-This document will give you a short introduction to the wonderful world of ggplot. Before you fight your way through this document, take a look at some of the [best visualisations](https://cedricscherer.netlify.com/2019/12/30/best-tidytuesday-2019/) from 2019 produced with ggplot. Just think of the struggle to produce those in base R.  
+This document will give you a short introduction to the wonderful world of ggplot2. Before you fight your way through this document, take a look at some of the [best visualisations](https://cedricscherer.netlify.com/2019/12/30/best-tidytuesday-2019/) from 2019 produced with ggplot. Just think of the struggle to produce those in base R.  
 Here, we will deal with the basics and the most important aspects of the package. Each constituent of a graphic is explained shortly and a few examples will hopefully demonstrate how to use the learned input.  
 You can find all exercises, solutions, and source code for this introduction in my [github repository](https://github.com/Ischi94/ggplot_intro).   
 Please note that ggplot might be a gateway drug to the tidyverse. Unfortunately, this is neither an introduction to the tidyverse nor an exhaustive report showing you every detail of ggplots. If needed, I can provide an intro to the tidyverse within the next weeks. Ggplot offers the chance to produce *any* graph you can think of. Use your power wisely.
@@ -25,11 +25,11 @@ Please note that ggplot might be a gateway drug to the tidyverse. Unfortunately,
 
 # Further literature  
   
-While working on a specific plot, it's always a good idea to have the [cheatsheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) for ggplot open.  
-It might be that my intro confused you more than it helped. This is definitely my fault and not due to ggplot beeing confusing. Don't let my bad presentation skills stop you from producing awesome graphs and do your own research instead.  
-There are a number of free (and great!) books online covering ggplot and data visualisation in detail. [R for Data Science](https://r4ds.had.co.nz/) teaches you how to get your data into R, get it into the most useful structure, transform it, visualise it and model it. Read the chapters *Data Visualisation* and *Graphics for communication* for ggplot info. If you've mastered the basics of ggplot and want to learn more, read [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/index.html). It describes the theoretical underpinnings of ggplot2 and shows you how all the pieces fit together. This book helps you understand the theory that underpins ggplot2, and will help you create new types of graphics specifically tailored to your needs. If you still want more, read [Data Visualization: A practical introduction](http://socviz.co/). It introduces you to both the ideas and the methods of data visualization in a sensible, comprehensible, reproducible way using ggplot (with code). And last but not least, if you'd like to learn more about the theoretical underpinnings of ggplot2 before you start, you can always refer to [The Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf).  
-Ggplot has a number of [extentions](http://exts.ggplot2.tidyverse.org/gallery/) (other packages), which we will ignore for now. Especially *ggrepel*, *ggforce* and *patchwork* might be very useful for you later on.  
-The best thing about R compared to other programming languages is the community and the help you can find online by simply googling stuff. Ggplot is no exception from this. You will find a lot of input online. 
+While working on a specific plot, it's always a good idea to have the [cheatsheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) for ggplot2 open.  
+It might be that my intro confused you more than it helped. This is definitely my fault and not due to ggplot2 beeing confusing. Don't let my bad presentation skills stop you from producing awesome graphs and do your own research instead.  
+There are a number of free (and great!) books online covering ggplot2 and data visualisation in detail. [R for Data Science](https://r4ds.had.co.nz/) teaches you how to get your data into R, get it into the most useful structure, transform it, visualise it and model it. Read the chapters *Data Visualisation* and *Graphics for communication* for ggplot2 info. If you've mastered the basics of ggplot2 and want to learn more, read [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/index.html). It describes the theoretical underpinnings of ggplot2 and shows you how all the pieces fit together. This book helps you understand the theory that underpins ggplot2, and will help you create new types of graphics specifically tailored to your needs. If you still want more, read [Data Visualization: A practical introduction](http://socviz.co/). It introduces you to both the ideas and the methods of data visualization in a sensible, comprehensible, reproducible way using ggplot2 (with code). And last but not least, if you'd like to learn more about the theoretical underpinnings of ggplot2 before you start, you can always refer to [The Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf).  
+ggplot2 has a number of [extentions](http://exts.ggplot2.tidyverse.org/gallery/) (other packages), which we will ignore for now. Especially *ggrepel*, *ggforce* and *patchwork* might be very useful for you later on.  
+The best thing about R compared to other programming languages is the community and the help you can find online by simply googling stuff. ggplot2 is no exception from this. You will find a lot of input online. 
   
   
 # Get started
@@ -39,7 +39,7 @@ As ggplot2 is not part of base R, we need to download it first.
 install.packages("ggplot2")
 library(ggplot2)
 ```
-However, we will use data sets from the tidyverse. Ggplot is a part of the tidyverse and will automatically get called along with other packages when you load the tidyverse. 
+However, we will use data sets from the tidyverse. ggplot2 is a part of the tidyverse and will automatically get called along with other packages when you load the tidyverse. 
 ```{r load tidyverse, warning = FALSE}
 library(tidyverse)
 ```
@@ -47,8 +47,8 @@ library(tidyverse)
 
 ## Data  
   
-We will use three data sets that either come with the ggplot2 package.    
-The *mpg* data contains fuel economy data from 1999 to 2008 for 38 popular models of cars. This dataset is attached to the ggplot2 package.   
+We will use three data sets which come with the ggplot2 package.    
+The *mpg* data contains fuel economy data from 1999 to 2008 for 38 popular models of cars.   
 ```{r mtcars, echo = FALSE}
 knitr::kable(
   mpg[1:3, ], 
@@ -94,9 +94,9 @@ Our first ggplot! Now we can start to answer our question. Does this plot confir
 ***  
 
 Before we move on from here, let us quickly evaluate what we did here:  
-We started our plot with the function `ggplot()`. `ggplot()` creates a coordinate system that you can add layers to. The first argument of `ggplot()` is the dataset to use in the graph. So `ggplot(data = mpg)` creates an empty graph.
+We started our plot with the function `ggplot()`. `ggplot()` creates a coordinate system to which you can add layers to. The first argument of `ggplot()` is the dataset to use in the graph. So `ggplot(data = mpg)` creates an empty graph.
   
-To showcase our data, we need to add one or more layers to `ggplot()`. We did this by using `geom_point()`, which creates a scatterplot. Ggplot2 comes with many geom function which each add a different type of layer to a plot.  
+To showcase our data, we need to add one or more layers to `ggplot()`. We did this by using `geom_point()`, which creates a scatterplot. ggplot2 comes with many geom function which each add a different type of layer to a plot.  
   
 Each geom function in ggplot2 takes a mapping argument. This defines how variables in your dataset are mapped to visual properties. The mapping argument is always paired with `aes()`, and the x and y arguments of `aes()` specify which variables to map to the x and y axes. ggplot2 looks for the mapped variables in the data argument, in this case, mpg.  
   
@@ -109,7 +109,7 @@ In other words, we told ggplot to open an empty plot with mpg as underlying data
   
 In our plot, one group of points seems to fall outside of the linear trend. These cars have a higher mileage than you might expect. How can you explain these cars?  
   
-Let's hypothesize that the cars are hybrids. One way to test this hypothesis is to look at the class value for each car. The `class` variable of the *mpg* dataset classifies cars into groups such as compact, midsize, and SUV. If the outlying points are hybrids, they should be classified as compact cars or, perhaps, subcompact cars (keep in mind that this data was collected before hybrid trucks and SUVs became popular).
+Let's hypothesize that the cars are hybrids. One way to test this hypothesis is to look at the class value for each car. The `class` variable of the *mpg* dataset classifies cars into groups such as compact, midsize, and SUV. If the outlying points are hybrids, they should be classified as compact cars or, perhaps, subcompact cars.
 
 You can add a third variable, like class, to a two dimensional scatterplot by mapping it to an aesthetic. An aesthetic is a visual property of the objects in your plot. Aesthetics include things like the size, the shape, or the color of your points. You can display a point in different ways by changing the values of its aesthetic properties.  
 You can convey information about your data by mapping the aesthetics in your plot to the variables in your dataset. For example, you can map the colors of your points to the class variable to reveal the class of each car.
@@ -118,7 +118,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy, colour = class))
 ```
   
-Never disappoint Nussaibah and type *color* instead of the nice british *colour*. The good thing about ggplot however is that it will still understand you, even if you use ~~barbarous~~ american english.  
+Never disappoint Nussaibah and type *color* instead of the nice british *colour*. The good thing about ggplot2 however is that it will still understand you, even if you use ~~barbarous~~ american english.  
   
 To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside `aes()`. ggplot2 will automatically assign a unique level of the aesthetic (here a unique colour) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.  
   
@@ -199,7 +199,7 @@ ggplot(data = mpg) +
   
 Here `geom_smooth()` separates the cars into three lines based on their *drv* value, which describes a car's drivetrain. One line describes all of the points with a 4 value, one line describes all of the points with an f value, and one line describes all of the points with an r value. Here, 4 stands for four-wheel drive, f for front-wheel drive, and r for rear-wheel drive.
 
-If this sounds strange, we can make it more clear by overlaying the lines on top of the raw data and then coloring everything according to drv.
+If this sounds strange, we can make it more clear by overlaying the lines on top of the raw data and then coloring everything according to *drv*.
 ```{r combined trend, echo = FALSE, message  = FALSE, fig.align = 'center'}
 ggplot(data = mpg, aes(x = displ, y = hwy, colour = drv)) + 
   geom_point() +
@@ -216,7 +216,7 @@ ggplot(data = mpg) +
 ```
   
   
-This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display cty instead of hwy. You'd need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to ggplot(). ggplot2 will treat these mappings as global mappings that apply to each geom in the graph. In other words, this code will produce the same plot as the previous code:
+This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display cty instead of hwy. You'd need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to `ggplot()`. ggplot2 will treat these mappings as global mappings that apply to each geom in the graph. In other words, this code will produce the same plot as the previous code:
 ```{r nice multiple geoms, eval = FALSE, fig.align = 'center'}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
   geom_point() + 
