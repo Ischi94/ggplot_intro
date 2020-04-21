@@ -383,7 +383,157 @@ itmap + coord_quickmap()
 * `coord_map()` uses the mapproj package, https://cran.r-project.org/package=mapproj to do a formal map projection. It takes the same arguments as `mapproj::mapproject()` for controlling the projection. It is much slower than `coord_quickmap()` because it must munch the data and transform each piece. Normally `coord_quickmap()` should be sufficient.  
   
   
+# Themes  
+  
+Themes give you control over the non-data elements of your plot. The theme system does not affect how the data is rendered by geoms, or how it is transformed by scales. Themes don’t change the perceptual properties of the plot, but they do help you make the plot aesthetically pleasing or match an existing style guide. This allows you, e.g., to meet the style demands of the journal you want to publish in. Themes give you control over things like fonts, ticks, panel strips, and backgrounds.  
+  
+  
+## Predefined themes  
+  
+ggplot2 comes with a number of built in themes. The most popular is `theme_grey()`, the signature default ggplot2 theme with a light grey background and white gridlines.  
+  
+There are seven other themes built in to ggplot2 1.1.0:
+  
+* `theme_bw()`: a variation on `theme_grey()` that uses a white background and thin grey grid lines.
+
+* `theme_linedraw()`: A theme with only black lines of various widths on white backgrounds, reminiscent of a line drawing.
+
+* `theme_light()`: similar to `theme_linedraw()` but with light grey lines and axes, to direct more attention towards the data.
+
+* `theme_dark()`: the dark cousin of `theme_light()`, with similar line sizes but a dark background. Useful to make thin coloured lines pop out.
+
+* `theme_minimal()`: A minimalistic theme with no background annotations.
+
+* `theme_classic()`: A classic-looking theme, with x and y axis lines and no gridlines.
+
+* `theme_void()`: A completely empty theme.  
+  
+```{r themes, echo=FALSE, fig.show = 'hold', out.width = "25%", fig.height=10}
+df <- data.frame(x = 1:3, y = 1:3)
+base <- ggplot(df, aes(x, y)) + geom_point() 
+base + theme_grey() + ggtitle("theme_grey()") + theme(plot.title = element_text(size = 25))
+base + theme_bw() + ggtitle("theme_bw()") + theme(plot.title = element_text(size = 25))
+base + theme_linedraw() + ggtitle("theme_linedraw()") + theme(plot.title = element_text(size = 25))
+base + theme_light() + ggtitle("theme_light()") + theme(plot.title = element_text(size = 25))
+base + theme_dark() + ggtitle("theme_dark()") + theme(plot.title = element_text(size = 25))
+base + theme_minimal()  + ggtitle("theme_minimal()") + theme(plot.title = element_text(size = 25))
+base + theme_classic() + ggtitle("theme_classic()") + theme(plot.title = element_text(size = 25))
+base + theme_void() + ggtitle("theme_void()") + theme(plot.title = element_text(size = 25))
+```  
+  
+As well as applying themes a plot at a time, you can change the default theme with theme_set(). For example, if you really hate the default grey background, run theme_set(theme_bw()) to use a white background for all plots.
+
+You’re not limited to the themes built-in to ggplot2. You can find extentions on ggplot2 themes [here](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/).  
+  
+  
+## Modify themes  
+  
+The complete themes are a great place to start but don’t give you a lot of control. To modify individual elements, you need to use `theme()` to override the default setting for an element with an element function.  
+  
+To modify an individual theme component you use code like `plot + theme(element.name = element_function())`. There are four basic types of built-in element functions: `text`, `lines`, `rectangles`, and `blank`. Each element function has a set of parameters that control the appearance:  
+  
+* `element_text()` draws labels and headings. You can control the `font family`, `face`, `colour`, `size` (in points), `hjust`, `vjust`, `angle` (in degrees) and `lineheight` (as ratio of fontcase).  
+
+* `element_line()` draws `lines` parameterised by `colour`, `size` and `linetype`.  
+
+* `element_rect()` draws `rectangles`, mostly used for backgrounds, parameterised by `fill colour` and `border colour`, `size` and `linetype`.  
+
+* `element_blank()` draws nothing. Use this if you don’t want anything drawn, and no space allocated for that element.  
+  
+There are around 40 unique elements that control the appearance of the plot. They can be roughly grouped into five categories: plot, axis, legend, panel and facet. Take a look at [chapter 15.4](https://ggplot2-book.org/polishing.html#introduction-5) of the ggplot2 book to see them all. 
+  
+  
+# Highlighting  
+  
+To highlight data within you plot, you need to add an extra layer to it. We can to this using `annotate()`, the **ggforce** package, or the **highlight** package. 
+
+## Annotate  
+  
+`annotate` adds a single annotation to your plot, having the geom you specify. We can use `filte()` to a highlight a group of our data and then annotate the explanation (geom + text). 
+We can use annotate to provide a point in the plot and add text: 
+
+```{r annotate, fig.align='center', fig.height=5, fig.width=7}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(
+    data = filter(mpg, manufacturer == "subaru"), 
+    colour = "orange",
+    size = 3
+  ) +
+  geom_point() +
+  # add orange margin
+  annotate(geom = "point", x = 5.5, y = 40, colour = "orange", size = 3) + 
+  # add black point
+  annotate(geom = "point", x = 5.5, y = 40) + 
+  # add text
+  annotate(geom = "text", x = 5.6, y = 40, label = "subaru", hjust = "left")
+```  
+  
+You can produce arrows, rectangles, text and many more geoms with `annotate()´. 
+
+## Group labeling  
+  
+The **ggforce** package contains a lot of useful tools to extend ggplot2 functionality, including functions such as `geom_mark_ellipse()` that overlays a plot with circular “highlight” marks. For example: 
+  
+```{r ggforce, fig.align='center', fig.height=5, fig.width=7}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() + 
+  ggforce::geom_mark_ellipse(aes(label = cyl, group = cyl))
+```  
+  
+# Saving  
+  
+You can save your plot using `ggsave()`. `ggsave()` is optimised for interactive use: you can use it after you’ve drawn a plot. It has the following important arguments:
+
+* The first argument, `path`, specifies the path where the image should be saved. The file extension will be used to automatically select the correct graphics device. `ggsave()` can produce `.eps`, `.pdf`, `.svg`, `.wmf`, `.png`, `.jpg`, `.bmp`, and `.tiff`.
+
+* `width` and `height` control the output size, specified in inches. If left blank, they’ll use the size of the on-screen graphics device.
+
+* For raster graphics (i.e. `.png`, `.jpg`), the `dpi` argument controls the resolution of the plot. It defaults to 300, which is appropriate for most printers, but you may want to use 600 for particularly high-resolution output, or 96 for on-screen (e.g., web) display.
+
+You can specify which plot you want to save using the `plot` argument: 
+
+```{r saving1, eval=FALSE}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point()
+
+ggsave(plot = p, file = "my_cool_plot.png")
+```  
+
+If you don't specify the `plot` argument, `ggsave()` will use the last plot you created. 
+
+```{r saving2, eval=FALSE}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point()
+
+ggsave(file = "my_cool_plot.png")
+```
+
+  
+# Advantage of ggplot  
+  
+The main idea that lies behind ggplot is the grammar of graphics: Each plot can be made from the same few components:  
+  
+  
+```{r layers, out.width = "20%", out.extra='style="float:right; padding:0px"', fig.height=0.75}
+knitr::include_graphics("https://miro.medium.com/max/341/1*QeaIg17ruLAFVgh64ObTyQ.png")
+```
+  
+* Aesthetics  
+  
+* Geometries    
+  
+* Statistics  
+  
+* Scaling  
+  
+* Faceting  
+  
+* Themes  
+  
+<br/>
+This enables us to break down each and every plot into chunks/ components, and in return we can produce each and every plot when we just tell ggplot what components to draw. This is a very powerful tool and very different from the base R approach. Additionally, it forces you to **think** about your data before plotting, instead of just throwing it into a function like `hist()`. One of the biggest advantages of gplot2 is that you don't have to open Adobe Illustrator, Corel Draw or any other software to modify your plots outside of R. If you produce the whole plot using ggplot2, you can be sure that your plot follows your data and that you didn't add any mistakes while modifying your plot. Everybody can reproduce your plot with your code and can see that it is valid. When a reviewer wants you to add some changes to your plot, you can just add a line to your code instead of saving it as a pdf, loading it into Adobe Illustrator, modifying the plot there, adding the changes, saving it as a png etc... Yes, this can result in big chunks of code, but the pros outweigh the cons here. There is a lot of theory behind ggplot. But once you overcome this theory you can control and modify anything you like on your plot while beeing on the safeside when it comes to reproducibility. 
 
 
- 
+
+
 
