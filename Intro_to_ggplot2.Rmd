@@ -36,7 +36,7 @@ Scales control the mapping from data to aesthetics. They take your data and tran
   
 ## Modifying scales  
   
-Whenever we don't specify a scale in our `ggplot()` call, ggplot uses the default scale. If you want to override the defaults, youll’ll need to add the scale ourself. You can do that with our **+** operator.  
+Whenever we don't specify a scale in our `ggplot()` call, ggplot uses the default scale. If you want to override the defaults, you'll need to add the scale ourself. You can do that with our **+** operator.  
 
 ```{r scale intro, eval=FALSE}
 ggplot(mpg, aes(displ, hwy)) + 
@@ -119,11 +119,116 @@ my_plot + scale_colour_continuous(breaks = c(15, 30), labels = c("low", "high"))
   
 ## Scale transformations  
   
+It might be helpful to transform your data when plotting, to see patterns emerging. This is particularly interesting in your exploratory analysis part, where you just plot things and then see where this is going. With ggplot2, you don't have to do this manually before plotting. Transforming your scales will save you time and energy, while ggplot2 makes nice line breaks and everything. Every continuous scale takes a `trans` argument, allowing the use of a variety of transformations:  
+  
+```{r scale transformation, fig.align='center', fig.height=3, fig.width=7}
+ggplot(diamonds, aes(price, carat)) + 
+  geom_bin2d() + 
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log2")
+```  
+
+  
+There are shortcuts for the most common: `scale_x_log10()`, `scale_x_sqrt()` and `scale_x_reverse()` (and similarly for y.)
+
   
 ## Colours  
   
+Colours are a difficult topic and it's always good to have the underlying basics of colour theory in your mind when you produce a plot for a presentation, website or a publication. I've found myself quite often spending hours and hours trying out different colours for one plot. Luckily, ggplot2 offers some sensitive defaults and shortcuts. We will spent a bit more time on colours now, as they are really important when it comes to plots.  
   
   
+### Continuous  
+  
+Colour gradients are often used to show the height of a 2d surface. In the following example we’ll use the surface of a 2d density estimate of the `faithful` dataset (Azzalini and Bowman 1990, within the ggplot2 package), which records the waiting time between eruptions and during each eruption for the Old Faithful geyser in Yellowstone Park. I hide the legends and set expand to 0, to focus on the appearance of the data. This expands to plot to allign with the axis lines, instead of having some space there by default.  
+  
+```{r erupt}
+erupt <- ggplot(faithfuld, aes(waiting, eruptions, fill = density)) +
+  geom_raster() +
+  scale_x_continuous(NULL, expand = c(0, 0)) + 
+  scale_y_continuous(NULL, expand = c(0, 0)) + 
+  theme(legend.position = "none")
+```  
+  
+There are four continuous colour scales:
+
+* `scale_colour_gradient()` and `scale_fill_gradient()`: a two-colour gradient, low-high (light blue-dark blue). This is the default scale for continuous colour, and is the same as `scale_colour_continuous()`. Arguments `low` and `high` control the colours at either end of the gradient.  
+  
+```{r erupt plot, fig.show = 'hold', out.width = "50%", fig.height=3}
+erupt
+
+erupt + scale_fill_gradient(low = "white", high = "black")
+```
+
+* `scale_colour_gradient2()` and `scale_fill_gradient2()`: a three-colour gradient, low-med-high (default is red-white-blue). As well as low and high colours, these scales also have a mid colour for the colour of the midpoint. The midpoint defaults to 0, but can be set to any value with the midpoint argument.  
+  
+```{r erupt gradient2, fig.align='center', fig.height=3, fig.width=7}
+mid <- median(faithfuld$density)
+erupt + scale_fill_gradient2(midpoint = mid, low = "darkred", mid = "darkgreen", 
+                             high = "darkblue") 
+```
+
+* `scale_colour_gradientn()` and `scale_fill_gradientn()`: a custom n-colour gradient. This is useful if you have colours that are meaningful for your data (just ask Nussaibah about her terrain map), or you’d like to use a palette produced by another package (like *colorspace* or *RColorBrewer*).  
+  
+```{r gradientn, fig.show = 'hold', out.width = "33%", fig.height=3}
+erupt + scale_fill_gradientn(colours = terrain.colors(7))
+erupt + scale_fill_gradientn(colours = colorspace::heat_hcl(7))
+erupt + scale_fill_gradientn(colours =  RColorBrewer::brewer.pal(7, "Spectral"))
+```
+  
+  
+* `scale_color_distiller()` and `scale_fill_distiller()` apply the ColorBrewer colour scales to continuous data. You use it the same way as `scale_fill_brewer()`, described later.  
+  
+
+```{r colorbrewer fill, fig.show = 'hold', out.width = "33%", fig.height=3}
+erupt + scale_fill_distiller()
+erupt + scale_fill_distiller(palette = "RdPu")
+erupt + scale_fill_distiller(palette = "YlOrBr")
+```  
+  
+  
+### Discrete
+  
+There are four colour scales for discrete data:  
+  
+```{r my_bars, echo=FALSE}
+my_bars <- ggplot(mpg, aes(class)) +
+  geom_bar(aes(fill = class), show.legend = FALSE) + 
+  coord_flip()
+```  
+  
+* The default colour scheme, `scale_colour_hue()`, picks evenly spaced hues around the HCL colour wheel. This works well for up to about eight colours, but after that it becomes hard to tell the different colours apart. You can control the default chroma and luminance, and the range of hues, with the `h`, `c` and `l` arguments:  
+  
+```{r my_bars hue, fig.show = 'hold', out.width = "33%", fig.height=3}
+my_bars
+my_bars + scale_fill_hue(c = 40)
+my_bars + scale_fill_hue(h = c(180, 300))
+```
+  
+  
+* `scale_colour_brewer()` uses handpicked “ColorBrewer” colours, from the [RColorBrewer package](http://colorbrewer2.org/). These colours have been designed to work well in a wide variety of situations, although the focus is on maps and so the colours tend to work better when displayed in large areas. 
+  
+  
+* `scale_colour_grey()` maps discrete data to grays, from light to dark.  
+  
+  
+* `scale_colour_manual()` is useful if you have your own discrete colour palette. You can even use them with colours inspired by Wes Anderson movies, as provided by the [wesanderson package](https://github.com/karthik/wesanderson).  
+Instead of mapping a colour palette to your data, you can use the `values` parameter of `scale_colour_manual()` (or `scale_fill_manual()`, depending on your aesthetics) to manually specify the values that the scale should produce:  
+  
+```{r override my plot, echo=FALSE}
+my_plot <- ggplot(mpg, aes(displ, hwy, colour = class)) +
+  geom_point(size = 4, show.legend = FALSE)
+```
+
+```{r ugly plot, fig.align='center', fig.height=3, fig.width=7}
+my_plot + scale_colour_manual(values = wesanderson::wes_palette("BottleRocket1"))
+my_bars + 
+  scale_fill_manual(values = c("coral", "orange", "darkgreen", "steelblue", "#ba855e", "#919108", "#f25ad8"))
+```
+
+You can steel colours from your favourite artist using the [colortheft webpage](https://colortheft.com/).  
+Like I already mentioned, it is always important to think about what you want to visualise and what message you want to convey. There is not the one colour palette to fit all your needs, play around with them and see what fits. Also: bright colours work well for points, but are overwhelming on bars. Subtle colours work well for bars, but are hard to see on points.   
+
+
 # Legends  
   
 While axes and legends share most parameters, some options only apply to legends, as they are more complex than axes. 
@@ -137,11 +242,11 @@ While axes and legends share most parameters, some options only apply to legends
   
 ## Layout  
   
-A number of settings that affect the overall display of the legends are controlled through the theme system. You’ll learn more about themes towards the end of this file, but for now, all you need to know is that you modify theme settings with the `theme()` function.
+A number of settings that affect the overall display of the legends are controlled through the theme system. You'll learn more about themes towards the end of this file, but for now, all you need to know is that you modify theme settings with the `theme()` function.
 
-The position and justification of legends are controlled by the theme setting `legend.position`, which takes values “right”, “left”, “top”, “bottom”, or “none” (no legend).
+The position and justification of legends are controlled by the theme setting `legend.position`, which takes values `right`, `left`, `top`, `bottom`, or `none` (no legend).
 
-```{r legend positions, fig.show = 'hold', out.width = "33%", fig.height=6}
+```{r legend positions, fig.show = 'hold', out.width = "33%", fig.height=4}
 my_plot + theme(legend.position = "right") # default
 my_plot + theme(legend.position = "bottom") 
 my_plot + theme(legend.position = "none") 
@@ -158,7 +263,7 @@ The guide functions, `guide_colourbar()` and `guide_legend()`, offer additional 
 my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = class), alpha = 0.1)
 ```
 
-```{r alpha override, fig.show = 'hold', out.width = "50%", fig.height=6}
+```{r alpha override, fig.show = 'hold', out.width = "50%", fig.height=4}
 my_plot
 my_plot + guides(colour = guide_legend(override.aes = list(alpha = 1)))
 ```  
@@ -169,7 +274,7 @@ You can override the default guide using the guide argument of the corresponding
 my_plot <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = cty))
 ```
 
-```{r guide legend, fig.show = 'hold', out.width = "50%", fig.height=6}
+```{r guide legend, fig.show = 'hold', out.width = "50%", fig.height=4}
 my_plot
 my_plot + scale_colour_continuous(guide = guide_legend(title = "LEFT", title.position = "left"))
 ``` 
@@ -181,4 +286,104 @@ The most useful options for guide_legend are:
   
 3. `override.aes` overrides some of the aesthetic settings derived from each layer. This is useful if you want to make the elements in the legend more visually prominent. 
 
-4. `keywidth` and `keyheight` (along with `default.unit`) allow you to specify the size of the keys. These are grid units, e.g. `unit(1, "cm")`. 
+4. `keywidth` and `keyheight` (along with `default.unit`) allow you to specify the size of the keys. These are grid units, e.g. `unit(1, "cm")`.  
+  
+  
+# Coordinate systems  
+  
+Coordinate systems define the environment your plots are displayed. There are two types of coordinate system: Linear coordinate systems preserve the shape of geoms and non-linear systems change them.  
+  
+  
+## Linear  
+  
+There are three linear coordinate systems: `coord_cartesian()`, `coord_flip()`, `coord_fixed()`.  
+
+### Zooming  
+  
+You can use `coord_cartesian()` to zoom into a plot. You might be tempted to zoom into a plot using scale limits, but this is not a good idea: When setting scale limits, any data outside the limits is thrown away; but when setting coordinate system limits we still use all the data, but we only display a small region of the plot. Setting coordinate system limits is like looking at the plot under a magnifying glass.  
+  
+```{r zooming, fig.show = 'hold', out.width = "33%", fig.height=5, message=FALSE}
+my_reg <- ggplot(mpg, aes(displ, hwy)) +
+  geom_smooth(method = "lm") 
+my_reg + labs(title ="Raw plot")
+my_reg + labs(title = "Wrong zooming") + scale_y_continuous(limits = c(20,30))
+my_reg + labs(title = "Correct zooming") + coord_cartesian(ylim = c(20,30))
+```  
+  
+### Axis flipping  
+  
+If you want to rotate the plot 90 degrees, you can use `coord_flip()` to exchange the x and y axes. Compare this with just exchanging the variables mapped to x and y: 
+```{r flipping, fig.show = 'hold', out.width = "33%", fig.height=5, message=FALSE}
+ggplot(mpg, aes(displ, cty)) + 
+  geom_point() + 
+  geom_smooth()
+# Exchanging cty and displ rotates the plot 90 degrees, but the smooth 
+# is fit to the rotated data.
+ggplot(mpg, aes(cty, displ)) + 
+  geom_point() + 
+  geom_smooth()
+# coord_flip() fits the smooth to the original data, and then rotates 
+# the output
+ggplot(mpg, aes(displ, cty)) + 
+  geom_point() + 
+  geom_smooth() + 
+  coord_flip()
+```  
+  
+### Equal scales  
+  
+`coord_fixed()` fixes the `ratio` of length on the x and y axes. The default `ratio` ensures that the x and y axes have equal scales: i.e., 1 cm along the x axis represents the same range of data as 1 cm along the y axis. The aspect `ratio` will also be set to ensure that the mapping is maintained regardless of the shape of the output device. See the documentation of `coord_fixed()` for more details.  
+  
+  
+## Non-linear  
+  
+Unlike linear coordinates, non-linear coordinates can change the shape of geoms. For example, in polar coordinates a rectangle becomes an arc; in a map projection, the shortest path between two points is not necessarily a straight line.  
+  
+  
+### Polar coordinates  
+  
+Using polar coordinates gives rise to pie charts and wind roses (from bar geoms), and radar charts (from line geoms). The code below shows how we can turn a bar into a pie chart or a bullseye chart by changing the coordinate system.  
+  
+```{r polar coordinates, fig.show = 'hold', out.width = "33%", fig.height=5, message=FALSE}
+base <- ggplot(mtcars, aes(factor(1), fill = factor(cyl))) +
+  geom_bar(width = 1) + 
+  theme(legend.position = "none") + 
+  scale_x_discrete(NULL, expand = c(0, 0)) +
+  scale_y_continuous(NULL, expand = c(0, 0))
+
+# Stacked barchart
+base
+
+# Pie chart
+base + coord_polar(theta = "y")
+
+# The bullseye chart
+base + coord_polar()
+```  
+  
+  
+### Map projections  
+  
+Maps are intrinsically displays of spherical data. Simply plotting raw longitudes and latitudes is misleading, so we must project the data. There are two ways to do this with ggplot2:
+
+* `coord_quickmap()` is a quick and dirty approximation that sets the aspect ratio to ensure that 1m of latitude and 1m of longitude are the same distance in the middle of the plot. This is a reasonable place to start for smaller regions, and is very fast.  
+  
+```{r coord_quickmap, fig.show = 'hold', out.width = "50%", fig.height=5}
+# Prepare a map of italy
+itmap <- ggplot(map_data("italy"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black") +
+  xlab(NULL) + ylab(NULL)
+
+# Plot it in cartesian coordinates
+itmap
+# With the aspect ratio approximation
+itmap + coord_quickmap()
+``` 
+  
+* `coord_map()` uses the mapproj package, https://cran.r-project.org/package=mapproj to do a formal map projection. It takes the same arguments as `mapproj::mapproject()` for controlling the projection. It is much slower than `coord_quickmap()` because it must munch the data and transform each piece. Normally `coord_quickmap()` should be sufficient.  
+  
+  
+
+
+ 
+
